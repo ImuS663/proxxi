@@ -9,6 +9,7 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Proxxi.Cli/Proxxi.Cli.csproj" />
     <Project Path="src/Proxxi.Core/Proxxi.Core.csproj" />
     <Project Path="src/Proxxi.Plugin.Loader/Proxxi.Plugin.Loader.csproj" />
   </Folder>
