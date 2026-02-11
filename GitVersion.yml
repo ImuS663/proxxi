@@ -1,0 +1,12 @@
+mode: ContinuousDelivery
+
+tag-prefix: 'v'
+
+branches:
+  main:
+    regex: ^main$
+    is-release-branch: true
+    increment: Inherit
+
+ignore:
+  sha: []

@@ -1,0 +1,96 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.rid }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        rid:
+          - linux-x64
+          - linux-arm64
+          - osx-x64
+          - osx-arm64
+          - win-x64
+          - win-arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: 5.x
+
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Publish
+        run: |
+          dotnet publish src/Proxxi.Cli/Proxxi.Cli.csproj \
+          -c Release \
+          -r ${{ matrix.rid }} \
+          --self-contained true \
+          -p:DebugType=embedded \
+          -p:Version=${{ steps.gitversion.outputs.semVer }} \
+          -o publish/${{ matrix.rid }}
+
+      - name: Rename Binary
+        run: |
+          mkdir -p artifacts
+          if [[ "${{ matrix.rid }}" == win-*  ]]; then
+            mv ./publish/${{ matrix.rid }}/proxxi.exe ./artifacts/proxxi-${{ matrix.rid }}.exe
+          else
+            mv ./publish/${{ matrix.rid }}/proxxi ./artifacts/proxxi-${{ matrix.rid }}
+          fi
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: proxxi-${{ matrix.rid }}
+          path: artifacts/*
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: ./artifacts/
+
+      - name: Flatten artifacts
+        run: |
+          mkdir -p ./release/
+          find ./artifacts/ -type f -exec mv {} ./release/ \;
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./release/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
