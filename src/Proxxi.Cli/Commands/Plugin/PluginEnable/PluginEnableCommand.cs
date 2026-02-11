@@ -1,0 +1,37 @@
+using Proxxi.Core.Providers;
+
+using Spectre.Console;
+using Spectre.Console.Cli;
+
+namespace Proxxi.Cli.Commands.Plugin.PluginEnable;
+
+public class PluginEnableCommand(IAnsiConsole console, IPluginConfigProvider configProvider)
+    : Command<PluginEnableCommand.PluginEnableCommandSettings>
+{
+    public class PluginEnableCommandSettings : PluginCommandSettings;
+
+    public override int Execute(CommandContext context, PluginEnableCommandSettings settings, CancellationToken ct)
+    {
+        var config = configProvider.Get(settings.Id);
+
+        if (config == null)
+        {
+            console.MarkupLine($"[red]Plugin '{settings.Id}' not found.[/]");
+            return 1;
+        }
+
+        if (config.Enabled)
+        {
+            console.MarkupLine("[yellow]Plugin already enabled.[/]");
+            return 0;
+        }
+
+        config.Enabled = true;
+
+        configProvider.Upsert(config);
+        configProvider.Save();
+
+        console.MarkupLine("[green]✓[/] Plugin enabled.");
+        return 0;
+    }
+}

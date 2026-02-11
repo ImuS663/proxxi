@@ -31,8 +31,17 @@ public class JsonPluginConfigProvider : IPluginConfigProvider
         _configs = JsonSerializer.Deserialize<List<PluginConfig>>(json, _options) ?? [];
     }
 
+    public bool AliasExists(string alias, string? excludeId = null) =>
+        _configs.Any(c =>
+            c.Alias != null &&
+            Comparer.Equals(c.Alias, alias) &&
+            (excludeId != null || !Comparer.Equals(c.Id, excludeId)));
+
     public PluginConfig? Get(string id) =>
         _configs.FirstOrDefault(c => Comparer.Equals(c.Id, id) || (c.Alias != null && Comparer.Equals(c.Alias, id)));
+
+    public IReadOnlyCollection<PluginConfig> GetAll() =>
+        _configs;
 
     public void Remove(string id) =>
         _configs.RemoveAll(c => Comparer.Equals(c.Id, id));

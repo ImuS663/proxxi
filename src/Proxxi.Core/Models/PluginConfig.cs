@@ -2,13 +2,13 @@ namespace Proxxi.Core.Models;
 
 public sealed class PluginConfig : IEquatable<PluginConfig>
 {
-    public required string Id { get; init; }
-    public string? Alias { get; init; }
-    public required string Path { get; init; }
-    public required string Version { get; init; }
-    public bool Enabled { get; init; } = true;
+    public required string Id { get; set; }
+    public string? Alias { get; set; }
+    public required string Path { get; set; }
+    public required string Version { get; set; }
+    public bool Enabled { get; set; } = true;
 
-    public IDictionary<string, string> Parameters { get; init; } =
+    public IDictionary<string, string> Parameters { get; set; } =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     public bool Equals(PluginConfig? other) =>

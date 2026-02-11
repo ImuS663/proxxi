@@ -71,6 +71,11 @@ public sealed class FetchCommand(
             console.MarkupLine("[yellow]Operation canceled.[/]");
             return 130;
         }
+        catch (Exception ex)
+        {
+            console.MarkupLine($"[red]{ex.Message}[/]");
+            return 1;
+        }
         finally
         {
             if (settings.Output != null)

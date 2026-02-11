@@ -5,6 +5,14 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 using Proxxi.Cli.Commands.Fetch;
+using Proxxi.Cli.Commands.Plugin;
+using Proxxi.Cli.Commands.Plugin.PluginAlias;
+using Proxxi.Cli.Commands.Plugin.PluginDisable;
+using Proxxi.Cli.Commands.Plugin.PluginEnable;
+using Proxxi.Cli.Commands.Plugin.PluginInfo;
+using Proxxi.Cli.Commands.Plugin.PluginParameter;
+using Proxxi.Cli.Commands.Plugin.PluginParameters;
+using Proxxi.Cli.Commands.Plugins;
 using Proxxi.Cli.Infrastructure.Injection;
 using Proxxi.Core.Extensions;
 using Proxxi.Core.Providers;
@@ -41,6 +49,34 @@ app.Configure(config =>
     config.AddCommand<FetchCommand>("fetch")
         .WithDescription("Fetch a proxies from source.")
         .WithExample("fetch", "test.plugin", "-o", "proxies.csv");
+
+    config.AddBranch<PluginCommandSettings>("plugin", pluginConfig =>
+    {
+        pluginConfig.SetDescription("Manage plugins.");
+
+        pluginConfig.SetDefaultCommand<PluginInfoCommand>();
+
+        pluginConfig.AddCommand<PluginAliasCommand>("alias")
+            .WithDescription("Set or remove an alias for a plugin.");
+
+        pluginConfig.AddCommand<PluginEnableCommand>("enable")
+            .WithDescription("Enable a plugin.");
+
+        pluginConfig.AddCommand<PluginDisableCommand>("disable")
+            .WithDescription("Disable a plugin.");
+
+        pluginConfig.AddCommand<PluginParameterCommand>("parameter")
+            .WithDescription("Set or remove a parameter for a plugin.");
+
+        pluginConfig.AddCommand<PluginParametersCommand>("parameters")
+            .WithDescription("List parameters for a plugin.");
+
+        pluginConfig.AddCommand<PluginInfoCommand>("info")
+            .WithDescription("Show information about a plugin.");
+    });
+
+    config.AddCommand<PluginsCommand>("plugins")
+        .WithDescription("List installed plugins.");
 
 #if DEBUG
     config.ValidateExamples();
