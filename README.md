@@ -1,7 +1,6 @@
 # proxxi
 
-**proxxi** is a .NET toolchain for **fetching proxies from plugins** and **serializing them into multiple output formats
-**.
+**proxxi** is a .NET toolchain for **fetching proxies from plugins** and **serializing them into multiple output formats**.
 
 ## Features
 
@@ -35,8 +34,7 @@ dotnet build -c Release --self-contained true -p:DebugType=embedded -o publish
 
 ## CLI usage
 
-> The CLI provides a `fetch` command that loads configured plugins, fetches proxies, and writes them in the chosen
-> format.
+> The CLI provides a `fetch` command that loads configured plugins, fetches proxies, and writes them in the chosen format.
 
 ### Run
 
@@ -62,16 +60,20 @@ export PROXXI_DIR="<ABSOLUTE_OR_RELATIVE_PATH>"
 
 (If your shell is PowerShell on Windows, use `$env:PROXXI_DIR="..."`.)
 
-Proxxi will initialize required directories/files on first run.
+> Proxxi will initialize required directories/files on the first run.
 
 ### Plugin configuration
 
-Plugins are managed via a JSON-based configuration provider (stored under the Proxxi directory).
-You typically configure:
+You can manage plugins using the `plugin` command and its subcommands:
 
-- which plugins are enabled
-- plugin IDs (with optional aliases)
-- plugin parameters
+- `plugin <PLUGIN-ID> info` - Show information about a plugin
+- `plugin <PLUGIN-ID> alias [ALIAS]` - Set or remove an alias for a plugin
+- `plugin <PLUGIN-ID> enable` - Enable a plugin
+- `plugin <PLUGIN-ID> disable` - Disable a plugin
+- `plugin <PLUGIN-ID> parameter <NAME> [VALUE]` - Set or remove a parameter for a plugin
+- `parameters` - List parameters for a plugin
+
+You can also use the `plugins` command to list all installed plugins.
 
 ## Output formats
 
@@ -102,7 +104,7 @@ A plugin exposes one or more proxy sources, and the CLI orchestrates:
 
 ### Adding plugins
 
-1. **Choose your Proxxi directory** (optional, but recommended for predictable paths):
+1. **Choose your Proxxi directory** (optional but recommended for predictable paths):
     ```shell
     export PROXXI_DIR="<PATH_TO_PROXXI_DIR>"
     ```
@@ -123,6 +125,7 @@ A plugin exposes one or more proxy sources, and the CLI orchestrates:
         "path": "path/to/plugin/dll", // relative path from `$PROXXI_DIR/plugins/`
         "alias": "publisher", // optional
         "version": "1.0.0",
+        "enabled": true,
         "params": {
           // plugin parameters if needed
           "param1": "value1",
@@ -132,7 +135,7 @@ A plugin exposes one or more proxy sources, and the CLI orchestrates:
     ]
     ```
 
-> Tip: If a plugin is not discovered, ensure the plugin and its dependencies are present in the plugins folder and that the plugin is add/enabled in the JSON config.
+> Tip: If a plugin is not discovered, ensure the plugin and its dependencies are present in the plugins folder and that the plugin is added/enabled in the JSON config.
 
 ## License
 
