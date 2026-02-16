@@ -1,6 +1,7 @@
 using System.ComponentModel;
 
 using Proxxi.Core.Models;
+using Proxxi.Plugin.Sdk.Models;
 
 using Spectre.Console.Cli;
 
@@ -23,6 +24,10 @@ public class FetchCommandSettings : CommandSettings
     [CommandOption("-s|--stream"), DefaultValue(false)]
     [Description("Fetch proxies using streaming mode instead of batch mode")]
     public bool Stream { get; init; }
+
+    [CommandOption("-p|--protocols <PROTOCOLS>"), DefaultValue(Proxxi.Plugin.Sdk.Models.Protocols.None)]
+    [Description("Filter proxies by protocol: http, https, socks4, socks5")]
+    public Protocols? Protocols { get; init; }
 
     [CommandOption("--pretty")]
     [Description("Write human-readable, pretty-formatted output")]

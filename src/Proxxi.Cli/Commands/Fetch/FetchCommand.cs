@@ -6,6 +6,7 @@ using Proxxi.Core.Providers;
 using Proxxi.Core.ProxyWriters;
 using Proxxi.Plugin.Loader.Extensions;
 using Proxxi.Plugin.Loader.PluginLoaders;
+using Proxxi.Plugin.Sdk.Models;
 using Proxxi.Plugin.Sdk.ProxySources;
 
 using Spectre.Console;
@@ -28,6 +29,8 @@ public sealed class FetchCommand(
     {
         Stream stream;
         OutputFormat format;
+
+        var protocols = settings.Protocols ?? Protocols.None;
 
         if (settings.Output != null)
         {
@@ -54,14 +57,14 @@ public sealed class FetchCommand(
                 if (writer is not IStreamProxyWriter streamProxyWriter)
                     throw new InvalidOperationException($"{format} output does not support stream mode.");
 
-                await FetchAndWriteProxiesAsync(streamProxySource, streamProxyWriter, ct);
+                await FetchAndWriteProxiesAsync(streamProxySource, streamProxyWriter, protocols, ct);
             }
             else
             {
                 if (writer is not IBatchProxyWriter batchProxyWriter)
                     throw new InvalidOperationException($"{format} output does not support stream mode.");
 
-                await FetchAndWriteProxiesAsync(batchProxySource, batchProxyWriter, ct);
+                await FetchAndWriteProxiesAsync(batchProxySource, batchProxyWriter, protocols, ct);
             }
 
             return 0;
@@ -105,23 +108,29 @@ public sealed class FetchCommand(
     }
 
     private static async Task FetchAndWriteProxiesAsync(IBatchProxySource? batchProxySource,
-        IBatchProxyWriter writer, CancellationToken ct)
+        IBatchProxyWriter writer, Protocols protocols, CancellationToken ct)
     {
         if (batchProxySource == null)
             throw new InvalidOperationException("The plugin does not support batch mode.");
 
         var proxies = await batchProxySource.FetchAsync(ct);
 
+        if (protocols != Protocols.None)
+            proxies = proxies.Where(p => (p.Protocols & protocols) != Protocols.None);
+
         await writer.WriteAsync(proxies, ct);
     }
 
     private static async Task FetchAndWriteProxiesAsync(IStreamProxySource? streamProxySource,
-        IStreamProxyWriter writer, CancellationToken ct)
+        IStreamProxyWriter writer, Protocols protocols, CancellationToken ct)
     {
         if (streamProxySource == null)
             throw new InvalidOperationException("The plugin does not support stream mode.");
 
         var proxies = streamProxySource.FetchAsync(ct);
+
+        if (protocols != Protocols.None)
+            proxies = proxies.Where(p => (p.Protocols & protocols) != Protocols.None);
 
         await writer.WriteAsync(proxies, ct);
     }
