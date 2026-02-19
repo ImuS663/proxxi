@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Reflection;
 
 using Proxxi.Plugin.Loader.Models;
@@ -29,14 +30,16 @@ public sealed class PluginLoader : IPluginLoader
 
                 var pluginType = pluginAssembly.GetType(type.FullName!, true)!;
 
+                var description = pluginType.GetCustomAttribute<DescriptionAttribute>();
+
                 var parameters = pluginType.GetCustomAttributes<ParameterProxySourceAttribute>()
                     .Select(a => new PluginParameter(a.Name, a.Description, a.Required))
                     .ToHashSet();
 
                 var version = pluginType.Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
 
-                descriptors.Add(new PluginDescriptor(attribute.Id, attribute.Name, attribute.Description ?? "", version,
-                    path, attribute.HideBatch, attribute.HideStream, parameters, pluginType, context));
+                descriptors.Add(new PluginDescriptor(attribute.Id, attribute.Name, description?.Description ?? "",
+                    version, path, attribute.HideBatch, attribute.HideStream, parameters, pluginType, context));
             }
         }
 
