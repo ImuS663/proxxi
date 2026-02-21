@@ -23,10 +23,7 @@ public class PluginParameterCommand(
         var config = configProvider.Get(settings.Id);
 
         if (config == null)
-        {
-            console.MarkupLine($"[red]Plugin '{settings.Id}' is not installed.[/]");
-            return 1;
-        }
+            throw new InvalidOperationException($"Plugin '{settings.Id}' is not installed.");
 
         var fullPath = Path.Combine(_pathOptions.PluginsDir, config.Path);
 
@@ -34,10 +31,7 @@ public class PluginParameterCommand(
             .FirstOrDefault(pd => StringComparer.OrdinalIgnoreCase.Equals(pd.Id, config.Id));
 
         if (descriptor == null)
-        {
-            console.MarkupLine($"[red]Plugin '{settings.Id}' is not loaded.[/]");
-            return 1;
-        }
+            throw new InvalidOperationException($"Plugin '{settings.Id}' is not loaded.");
 
         string? parameterName;
 
@@ -48,10 +42,7 @@ public class PluginParameterCommand(
                 .FirstOrDefault(p => StringComparer.OrdinalIgnoreCase.Equals(p.Name, settings.Name))?.Name;
 
         if (parameterName == null)
-        {
-            console.MarkupLine($"[red]Plugin does not support parameter '{settings.Name}'.[/]");
-            return 1;
-        }
+            throw new InvalidOperationException($"Plugin does not support parameter '{settings.Name}'.");
 
         if (settings.Value != null)
         {
@@ -69,7 +60,7 @@ public class PluginParameterCommand(
         {
             if (!config.Parameters.Remove(parameterName))
             {
-                console.MarkupLine("[yellow]Plugin has no parameter to remove.[/]");
+                console.MarkupLine("[blue]Info:[/] Plugin has no parameter to remove.");
                 return 0;
             }
 
@@ -83,7 +74,7 @@ public class PluginParameterCommand(
 
         console.MarkupLine(config.Parameters.TryGetValue(parameterName, out var value)
             ? $"Parameter '{parameterName}': [yellow]{value}[/]"
-            : $"[yellow]Parameter '{parameterName}' is not set.[/]");
+            : $"[blue]Info:[/] Parameter '{parameterName}' is not set.");
 
         return 0;
     }

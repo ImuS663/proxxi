@@ -71,13 +71,8 @@ public sealed class FetchCommand(
         }
         catch (OperationCanceledException)
         {
-            console.MarkupLine("[yellow]Operation canceled.[/]");
+            console.MarkupLine("[yellow]Info:[/] Operation canceled.");
             return 130;
-        }
-        catch (Exception ex)
-        {
-            console.MarkupLine($"[red]{ex.Message}[/]");
-            return 1;
         }
         finally
         {

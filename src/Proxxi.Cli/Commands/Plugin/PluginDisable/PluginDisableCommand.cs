@@ -15,14 +15,11 @@ public class PluginDisableCommand(IAnsiConsole console, IPluginConfigProvider co
         var config = configProvider.Get(settings.Id);
 
         if (config == null)
-        {
-            console.MarkupLine($"[red]Plugin '{settings.Id}' not found.[/]");
-            return 1;
-        }
+            throw new InvalidOperationException($"Plugin '{settings.Id}' not found.");
 
         if (!config.Enabled)
         {
-            console.MarkupLine("[yellow]Plugin already disabled.[/]");
+            console.MarkupLine("[blue]Info:[/] Plugin already disabled.");
             return 0;
         }
 

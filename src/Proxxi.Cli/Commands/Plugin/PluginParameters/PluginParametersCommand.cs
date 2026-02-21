@@ -24,10 +24,7 @@ public class PluginParametersCommand(
         var config = configProvider.Get(settings.Id);
 
         if (config == null)
-        {
-            console.MarkupLine($"[red]Plugin '{settings.Id}' is not installed.[/]");
-            return 1;
-        }
+            throw new InvalidOperationException($"Plugin '{settings.Id}' is not installed.");
 
         if (settings.Description)
         {
@@ -37,16 +34,13 @@ public class PluginParametersCommand(
                 .FirstOrDefault(pd => StringComparer.OrdinalIgnoreCase.Equals(pd.Id, config.Id));
 
             if (descriptor == null)
-            {
-                console.MarkupLine($"[red]Plugin '{settings.Id}' is not loaded.[/]");
-                return 1;
-            }
+                throw new InvalidOperationException($"Plugin '{settings.Id}' is not loaded.");
 
             console.MarkupLine("[bold underline]Supported parameters:[/]");
 
             if (descriptor.Parameters.Count == 0)
             {
-                console.MarkupLine("[yellow]Plugin has no declared parameters.[/]");
+                console.MarkupLine("[blue]Info:[/] Plugin has no declared parameters.");
                 return 0;
             }
 
@@ -73,7 +67,7 @@ public class PluginParametersCommand(
 
             if (config.Parameters.Count == 0)
             {
-                console.MarkupLine("[yellow]No parameters configured for this plugin.[/]");
+                console.MarkupLine("[blue]Info:[/] No parameters configured for this plugin.");
                 return 0;
             }
 

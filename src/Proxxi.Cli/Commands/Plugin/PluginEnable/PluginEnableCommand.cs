@@ -15,14 +15,11 @@ public class PluginEnableCommand(IAnsiConsole console, IPluginConfigProvider con
         var config = configProvider.Get(settings.Id);
 
         if (config == null)
-        {
-            console.MarkupLine($"[red]Plugin '{settings.Id}' not found.[/]");
-            return 1;
-        }
+            throw new InvalidOperationException($"Plugin '{settings.Id}' not found.");
 
         if (config.Enabled)
         {
-            console.MarkupLine("[yellow]Plugin already enabled.[/]");
+            console.MarkupLine("[blue]Info:[/] Plugin already enabled.");
             return 0;
         }
 

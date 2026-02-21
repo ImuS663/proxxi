@@ -27,7 +27,7 @@ public class PluginsCommand(
 
         if (configs.Count == 0)
         {
-            console.MarkupLine("[yellow]No plugins installed.[/]");
+            console.MarkupLine("[blue]Info:[/] No installed plugins.");
             return 0;
         }
 

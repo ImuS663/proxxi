@@ -26,10 +26,7 @@ public class PluginInfoCommand(
         var config = configProvider.Get(settings.Id);
 
         if (config == null)
-        {
-            console.MarkupLine($"[red]Plugin '{settings.Id}' is not installed.[/]");
-            return 1;
-        }
+            throw new InvalidOperationException($"Plugin '{settings.Id}' is not installed.");
 
         var fullPath = Path.Combine(_pathOptions.PluginsDir, config.Path);
 
@@ -37,10 +34,7 @@ public class PluginInfoCommand(
             .FirstOrDefault(pd => StringComparer.OrdinalIgnoreCase.Equals(pd.Id, config.Id));
 
         if (descriptor == null)
-        {
-            console.MarkupLine($"[red]Plugin '{settings.Id}' is not loaded.[/]");
-            return 1;
-        }
+            throw new InvalidOperationException($"Plugin '{settings.Id}' is not loaded.");
 
         var grid = new Grid();
         grid.AddColumns(2);

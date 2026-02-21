@@ -13,18 +13,12 @@ public class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvider conf
         var config = configProvider.Get(settings.Id);
 
         if (config == null)
-        {
-            console.MarkupLine($"[red]Plugin '{settings.Id}' is not installed.[/]");
-            return 1;
-        }
+            throw new InvalidOperationException($"Plugin '{settings.Id}' is not installed.");
 
         if (settings.Value != null)
         {
             if (configProvider.AliasExists(settings.Value, config.Id))
-            {
-                console.MarkupLine($"[red]Alias '{settings.Value}' is already in use.[/]");
-                return 1;
-            }
+                throw new InvalidOperationException($"Alias '{settings.Value}' is already in use.");
 
             var oldAlias = config.Alias;
             config.Alias = settings.Value;
@@ -40,7 +34,7 @@ public class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvider conf
         {
             if (config.Alias == null)
             {
-                console.MarkupLine("[yellow]Plugin has no alias to remove.[/]");
+                console.MarkupLine("[blue]Info:[/] Plugin has no alias to remove.");
                 return 0;
             }
 
@@ -55,7 +49,7 @@ public class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvider conf
 
         console.MarkupLine(config.Alias != null
             ? $"Alias: [yellow]{config.Alias}[/]"
-            : "[yellow]No alias set.[/]");
+            : "[blue]Info:[/] No alias is set for this plugin.");
 
         return 0;
     }
