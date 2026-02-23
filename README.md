@@ -1,6 +1,7 @@
 # proxxi
 
-**proxxi** is a .NET toolchain for **fetching proxies from plugins** and **serializing them into multiple output formats**.
+**proxxi** is a .NET toolchain for **fetching proxies from plugins** and **serializing them into multiple output
+formats**.
 
 ## Features
 
@@ -34,7 +35,8 @@ dotnet build -c Release --self-contained true -p:DebugType=embedded -o publish
 
 ## CLI usage
 
-> The CLI provides a `fetch` command that loads configured plugins, fetches proxies, and writes them in the chosen format.
+> The CLI provides a`fetch` command that loads configured plugins, fetches proxies, and writes them in the chosen
+> format.
 
 ### Run
 
@@ -55,7 +57,7 @@ dotnet build -c Release --self-contained true -p:DebugType=embedded -o publish
 Proxxi supports configuring its working directory via an environment variable.
 
 ```shell
-export PROXXI_DIR="<ABSOLUTE_OR_RELATIVE_PATH>"
+export PROXXI_DIR="<PATH>"
 ```
 
 (If your shell is PowerShell on Windows, use `$env:PROXXI_DIR="..."`.)
@@ -71,7 +73,7 @@ You can manage plugins using the `plugin` command and its subcommands:
 - `plugin <PLUGIN-ID> enable` - Enable a plugin
 - `plugin <PLUGIN-ID> disable` - Disable a plugin
 - `plugin <PLUGIN-ID> parameter <NAME> [VALUE]` - Set or remove a parameter for a plugin
-- `parameters` - List parameters for a plugin
+- `plugin <PLUGIN-ID> parameters` - List parameters for a plugin
 
 You can also use the `plugins` command to list all installed plugins.
 
@@ -104,20 +106,23 @@ A plugin exposes one or more proxy sources, and the CLI orchestrates:
 
 ### Adding plugins
 
-1. **Choose your Proxxi directory** (optional but recommended for predictable paths):
-    ```shell
-    export PROXXI_DIR="<PATH_TO_PROXXI_DIR>"
-    ```
-2. **Run proxxi** for initial `PROXXI_DIR` and subfolders and files (if is first run):
-    ```shell
-    ./proxxi --help
-    ```
-3. **Copy the plugin** into the `plugins` directory. Typically, this is the plugin `.dll` plus any required dependency
+For automatic adding plugins from `.pxp` package use the command:
+
+```shell
+./proxxi install <PATH_TO_PLUGIN_PACKAGE>.pxp
+```
+
+> This command unpackage `.pxp` package in to the plugins directory, and register in the plugins
+> configuration `plugins.json`.
+
+#### Manual adding plugins
+
+1. **Copy the plugin** into the `plugins` directory. Typically, this is the plugin `.dll` plus any required dependency
    files that ship with it (keep every plugin in its own folder for simplicity and conflict prevention):
     ```shell
-    cp -r <PLUGIN> "$PROXXI_DIR/plugins/"
+    cp -r <PLUGIN_FOLDER> "$PROXXI_DIR/plugins/"
     ```
-4. **Register/enable the plugin** in the Proxxi plugin configuration (JSON) under the Proxxi directory.
+2. **Register/enable the plugin** in the plugins configuration `plugins.json` under the Proxxi directory.
     ```json5
     [
       {
@@ -135,7 +140,8 @@ A plugin exposes one or more proxy sources, and the CLI orchestrates:
     ]
     ```
 
-> Tip: If a plugin is not discovered, ensure the plugin and its dependencies are present in the plugins folder and that the plugin is added/enabled in the JSON config.
+> Tip: If a plugin is not discovered, ensure the plugin and its dependencies are present in the plugins folder and that
+> the plugin is added/enabled in the JSON config.
 
 ## License
 
