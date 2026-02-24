@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 using Spectre.Console.Cli;
 
-namespace Proxxi.Cli.Commands.Install;
+namespace Proxxi.Cli.Commands.Pack.Install;
 
 public sealed class InstallCommandSettings : CommandSettings
 {

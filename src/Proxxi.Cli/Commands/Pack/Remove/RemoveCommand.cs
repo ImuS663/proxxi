@@ -7,7 +7,7 @@ using Proxxi.Core.Providers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Proxxi.Cli.Commands.Remove;
+namespace Proxxi.Cli.Commands.Pack.Remove;
 
 public sealed class RemoveCommand(
     IAnsiConsole console,

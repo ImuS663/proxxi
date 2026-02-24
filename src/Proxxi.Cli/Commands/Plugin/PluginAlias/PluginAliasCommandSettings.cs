@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 
 namespace Proxxi.Cli.Commands.Plugin.PluginAlias;
 
-public class PluginAliasCommandSettings : PluginCommandSettings
+public sealed class PluginAliasCommandSettings : PluginCommandSettings
 {
     [CommandArgument(0, "[VALUE]")]
     [Description("The alias to set for the plugin (if omitted, the print the current alias)")]

@@ -5,7 +5,7 @@ using Spectre.Console.Cli;
 
 namespace Proxxi.Cli.Commands.Plugin.PluginAlias;
 
-public class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvider configProvider)
+public sealed class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvider configProvider)
     : Command<PluginAliasCommandSettings>
 {
     public override int Execute(CommandContext context, PluginAliasCommandSettings settings, CancellationToken ct)

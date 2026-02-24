@@ -7,7 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Proxxi.Cli.Commands.Fetch;
 
-public class FetchCommandSettings : CommandSettings
+public sealed class FetchCommandSettings : CommandSettings
 {
     [CommandArgument(0, "<ID>")]
     [Description("The plugin ID or alias to fetch proxies from")]

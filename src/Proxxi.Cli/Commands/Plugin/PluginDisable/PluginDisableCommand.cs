@@ -5,7 +5,7 @@ using Spectre.Console.Cli;
 
 namespace Proxxi.Cli.Commands.Plugin.PluginDisable;
 
-public class PluginDisableCommand(IAnsiConsole console, IPluginConfigProvider configProvider)
+public sealed class PluginDisableCommand(IAnsiConsole console, IPluginConfigProvider configProvider)
     : Command<PluginDisableCommand.PluginDisableCommandSettings>
 {
     public class PluginDisableCommandSettings : PluginCommandSettings;

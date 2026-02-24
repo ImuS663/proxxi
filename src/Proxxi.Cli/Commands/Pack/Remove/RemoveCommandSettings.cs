@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 using Spectre.Console.Cli;
 
-namespace Proxxi.Cli.Commands.Remove;
+namespace Proxxi.Cli.Commands.Pack.Remove;
 
 public sealed class RemoveCommandSettings : CommandSettings
 {

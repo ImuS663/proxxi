@@ -9,7 +9,7 @@ using Spectre.Console.Cli;
 
 namespace Proxxi.Cli.Commands.Plugin.PluginParameter;
 
-public class PluginParameterCommand(
+public sealed class PluginParameterCommand(
     IAnsiConsole console,
     IPluginConfigProvider configProvider,
     IPluginLoader pluginLoader,

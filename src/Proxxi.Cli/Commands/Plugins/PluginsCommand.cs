@@ -8,7 +8,7 @@ using Spectre.Console.Cli;
 
 namespace Proxxi.Cli.Commands.Plugins;
 
-public class PluginsCommand(
+public sealed class PluginsCommand(
     IAnsiConsole console,
     IPluginConfigProvider configProvider,
     IOptions<ProxxiPathsOptions> options

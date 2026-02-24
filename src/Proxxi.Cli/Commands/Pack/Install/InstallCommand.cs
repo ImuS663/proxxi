@@ -12,7 +12,7 @@ using Proxxi.Plugin.Loader.PluginLoaders;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Proxxi.Cli.Commands.Install;
+namespace Proxxi.Cli.Commands.Pack.Install;
 
 public sealed class InstallCommand(
     IAnsiConsole console,

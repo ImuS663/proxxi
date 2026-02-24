@@ -109,7 +109,7 @@ A plugin exposes one or more proxy sources, and the CLI orchestrates:
 For automatic adding plugins from `.pxp` package use the command:
 
 ```shell
-./proxxi install <PATH_TO_PLUGIN_PACKAGE>.pxp
+./proxxi pack install <PATH_TO_PLUGIN_PACKAGE>.pxp
 ```
 
 > This command unpackage `.pxp` package in to the plugins directory, and register in the plugins

@@ -5,7 +5,7 @@ using Spectre.Console.Cli;
 
 namespace Proxxi.Cli.Commands.Plugin.PluginEnable;
 
-public class PluginEnableCommand(IAnsiConsole console, IPluginConfigProvider configProvider)
+public sealed class PluginEnableCommand(IAnsiConsole console, IPluginConfigProvider configProvider)
     : Command<PluginEnableCommand.PluginEnableCommandSettings>
 {
     public class PluginEnableCommandSettings : PluginCommandSettings;

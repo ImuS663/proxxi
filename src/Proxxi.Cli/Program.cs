@@ -5,7 +5,8 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 using Proxxi.Cli.Commands.Fetch;
-using Proxxi.Cli.Commands.Install;
+using Proxxi.Cli.Commands.Pack.Install;
+using Proxxi.Cli.Commands.Pack.Remove;
 using Proxxi.Cli.Commands.Plugin;
 using Proxxi.Cli.Commands.Plugin.PluginAlias;
 using Proxxi.Cli.Commands.Plugin.PluginDisable;
@@ -14,7 +15,6 @@ using Proxxi.Cli.Commands.Plugin.PluginInfo;
 using Proxxi.Cli.Commands.Plugin.PluginParameter;
 using Proxxi.Cli.Commands.Plugin.PluginParameters;
 using Proxxi.Cli.Commands.Plugins;
-using Proxxi.Cli.Commands.Remove;
 using Proxxi.Cli.Infrastructure.Injection;
 using Proxxi.Core.Extensions;
 using Proxxi.Core.Providers;
@@ -80,11 +80,16 @@ app.Configure(config =>
     config.AddCommand<PluginsCommand>("plugins")
         .WithDescription("List installed plugins.");
 
-    config.AddCommand<InstallCommand>("install")
-        .WithDescription("Install a plugins with (.pxp) package.");
+    config.AddBranch("pack", packConfig =>
+    {
+        packConfig.SetDescription("Manage plugins packages.");
 
-    config.AddCommand<RemoveCommand>("remove")
-        .WithDescription("Remove a plugins package.");
+        packConfig.AddCommand<InstallCommand>("install")
+            .WithDescription("Install a plugins with (.pxp) package.");
+
+        packConfig.AddCommand<RemoveCommand>("remove")
+            .WithDescription("Remove a plugins package.");
+    });
 
 #if DEBUG
     config.ValidateExamples();

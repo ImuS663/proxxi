@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 
 namespace Proxxi.Cli.Commands.Plugin.PluginParameter;
 
-public class PluginParameterCommandSettings : PluginCommandSettings
+public sealed class PluginParameterCommandSettings : PluginCommandSettings
 {
     [CommandArgument(0, "<NAME>")]
     [Description("The parameter name to set for the plugin")]
