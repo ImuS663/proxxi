@@ -14,6 +14,7 @@
     <Project Path="src/Proxxi.Plugin.Loader/Proxxi.Plugin.Loader.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Proxxi.Cli.Tests/Proxxi.Cli.Tests.csproj" />
     <Project Path="tests/Proxxi.Core.Tests/Proxxi.Core.Tests.csproj" />
   </Folder>
 </Solution>
