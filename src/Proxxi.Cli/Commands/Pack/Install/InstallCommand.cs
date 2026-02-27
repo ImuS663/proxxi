@@ -52,7 +52,7 @@ public sealed class InstallCommand(
 
             var pluginDll = pluginDlls[0];
 
-            var descriptors = pluginLoader.LoadPlugins([pluginDll]);
+            var descriptors = pluginLoader.LoadPlugins(pluginDll);
 
             if (descriptors.Count == 0)
                 throw new InvalidOperationException($"Plugin '{fileName}' does not contain valid plugins.");

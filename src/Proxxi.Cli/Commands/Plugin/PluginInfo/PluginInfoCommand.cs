@@ -30,8 +30,7 @@ public sealed class PluginInfoCommand(
 
         var fullPath = Path.Combine(_pathOptions.PluginsDir, config.Path);
 
-        var descriptor = pluginLoader.LoadPlugins([fullPath])
-            .FirstOrDefault(pd => StringComparer.OrdinalIgnoreCase.Equals(pd.Id, config.Id));
+        var descriptor = pluginLoader.LoadPlugin(fullPath, config.Id);
 
         if (descriptor == null)
             throw new InvalidOperationException($"Plugin '{settings.Id}' is not loaded.");

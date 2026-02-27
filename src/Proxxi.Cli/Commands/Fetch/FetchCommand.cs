@@ -91,10 +91,9 @@ public sealed class FetchCommand(
         if (!pluginConfig.Enabled)
             throw new InvalidOperationException($"Plugin '{id}' is disabled.");
 
-        var path = Path.Combine(_pathOptions.PluginsDir, pluginConfig.Path);
+        var fullPath = Path.Combine(_pathOptions.PluginsDir, pluginConfig.Path);
 
-        var plugin = pluginLoader.LoadPlugins([path])
-            .FirstOrDefault(pd => StringComparer.OrdinalIgnoreCase.Equals(pd.Id, pluginConfig.Id));
+        var plugin = pluginLoader.LoadPlugin(fullPath, id);
 
         if (plugin == null)
             throw new InvalidOperationException($"Plugin '{id}' is not loaded.");
