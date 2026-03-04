@@ -45,7 +45,7 @@ public sealed class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvid
         var oldAlias = config.Alias;
         config.Alias = value;
 
-        UpdatePluginConfig(config);
+        configProvider.UpsertAndSave(config);
 
         console.MarkupLine($"[green]✓[/] Alias updated: {oldAlias ?? "<none>"} → [yellow]{config.Alias}[/]");
         return 0;
@@ -61,15 +61,9 @@ public sealed class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvid
 
         config.Alias = null;
 
-        UpdatePluginConfig(config);
+        configProvider.UpsertAndSave(config);
 
         console.MarkupLine("[green]✓[/] Alias removed.");
         return 0;
-    }
-
-    private void UpdatePluginConfig(PluginConfig config)
-    {
-        configProvider.Upsert(config);
-        configProvider.Save();
     }
 }

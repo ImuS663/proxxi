@@ -25,8 +25,7 @@ public sealed class PluginDisableCommand(IAnsiConsole console, IPluginConfigProv
 
         config.Enabled = false;
 
-        configProvider.Upsert(config);
-        configProvider.Save();
+        configProvider.UpsertAndSave(config);
 
         console.MarkupLine("[green]✓[/] Plugin disabled.");
         return 0;

@@ -25,8 +25,7 @@ public sealed class PluginEnableCommand(IAnsiConsole console, IPluginConfigProvi
 
         config.Enabled = true;
 
-        configProvider.Upsert(config);
-        configProvider.Save();
+        configProvider.UpsertAndSave(config);
 
         console.MarkupLine("[green]✓[/] Plugin enabled.");
         return 0;

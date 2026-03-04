@@ -83,13 +83,11 @@ public class PluginAliasCommandTests
             Assert.That(result, Is.Zero);
             Assert.That(_console.Output, Does.Contain("Alias updated: <none> → new-alias"));
 
-            _mock.Verify(x => x.Upsert(It.Is<PluginConfig>(c =>
+            _mock.Verify(x => x.UpsertAndSave(It.Is<PluginConfig>(c =>
                     c.Id == "test.plugin1" &&
                     c.Alias == "new-alias" &&
                     c.Version == "1.0.0")),
                 Times.Once);
-
-            _mock.Verify(x => x.Save(), Times.Once);
         }
     }
 
@@ -106,8 +104,7 @@ public class PluginAliasCommandTests
         {
             Assert.That(result, Is.Zero);
             Assert.That(_console.Output, Does.Contain("Plugin has no alias to remove."));
-            _mock.Verify(x => x.Upsert(It.IsAny<PluginConfig>()), Times.Never);
-            _mock.Verify(x => x.Save(), Times.Never);
+            _mock.Verify(x => x.UpsertAndSave(It.IsAny<PluginConfig>()), Times.Never);
         }
     }
 
@@ -125,12 +122,10 @@ public class PluginAliasCommandTests
             Assert.That(result, Is.Zero);
             Assert.That(_console.Output, Does.Contain("Alias removed."));
 
-            _mock.Verify(x => x.Upsert(It.Is<PluginConfig>(c =>
+            _mock.Verify(x => x.UpsertAndSave(It.Is<PluginConfig>(c =>
                     c.Id == "test.plugin3" &&
                     c.Alias == null)),
                 Times.Once);
-
-            _mock.Verify(x => x.Save(), Times.Once);
         }
     }
 }

@@ -10,4 +10,10 @@ public interface IPluginConfigProvider
     public void Remove(string id);
     public void Save();
     public void Upsert(PluginConfig config);
+
+    public void UpsertAndSave(PluginConfig config)
+    {
+        Upsert(config);
+        Save();
+    }
 }

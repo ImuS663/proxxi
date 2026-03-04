@@ -134,8 +134,7 @@ public class PluginParameterCommandTests
             Assert.That(_configs[2].Parameters,
                 Does.Contain(new KeyValuePair<string, string>("test-param-name", "test-param-value")));
 
-            _mockPluginConfigProvider.Verify(x => x.Upsert(It.IsAny<PluginConfig>()), Times.Once);
-            _mockPluginConfigProvider.Verify(x => x.Save(), Times.Once);
+            _mockPluginConfigProvider.Verify(x => x.UpsertAndSave(It.IsAny<PluginConfig>()), Times.Once);
         }
     }
 
@@ -154,8 +153,7 @@ public class PluginParameterCommandTests
             Assert.That(result, Is.Zero);
             Assert.That(_configs[2].Parameters, Does.Contain(new KeyValuePair<string, string>("page", "4")));
 
-            _mockPluginConfigProvider.Verify(x => x.Upsert(It.IsAny<PluginConfig>()), Times.Once);
-            _mockPluginConfigProvider.Verify(x => x.Save(), Times.Once);
+            _mockPluginConfigProvider.Verify(x => x.UpsertAndSave(It.IsAny<PluginConfig>()), Times.Once);
         }
     }
 
@@ -174,8 +172,7 @@ public class PluginParameterCommandTests
             Assert.That(result, Is.Zero);
             Assert.That(_configs[2].Parameters, Does.Not.ContainKey("key"));
 
-            _mockPluginConfigProvider.Verify(x => x.Upsert(It.IsAny<PluginConfig>()), Times.Once);
-            _mockPluginConfigProvider.Verify(x => x.Save(), Times.Once);
+            _mockPluginConfigProvider.Verify(x => x.UpsertAndSave(It.IsAny<PluginConfig>()), Times.Once);
         }
     }
 }

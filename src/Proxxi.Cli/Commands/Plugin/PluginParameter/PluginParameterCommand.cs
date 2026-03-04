@@ -67,7 +67,7 @@ public sealed class PluginParameterCommand(
     {
         config.Parameters[parameterName] = value;
 
-        UpdatePluginConfig(config);
+        configProvider.UpsertAndSave(config);
 
         console.MarkupLine($"[green]✓[/] Parameter '{parameterName}' set to [yellow]{value}[/]");
 
@@ -82,16 +82,10 @@ public sealed class PluginParameterCommand(
             return 0;
         }
 
-        UpdatePluginConfig(config);
+        configProvider.UpsertAndSave(config);
 
         console.MarkupLine("[green]✓[/] Parameter removed.");
 
         return 0;
-    }
-
-    private void UpdatePluginConfig(PluginConfig config)
-    {
-        configProvider.Upsert(config);
-        configProvider.Save();
     }
 }

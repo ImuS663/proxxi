@@ -69,8 +69,7 @@ public class PluginEnableCommandTests
         {
             Assert.That(result, Is.Zero);
             Assert.That(_console.Output, Does.Contain("Plugin already enabled."));
-            _mock.Verify(x => x.Upsert(It.IsAny<PluginConfig>()), Times.Never);
-            _mock.Verify(x => x.Save(), Times.Never);
+            _mock.Verify(x => x.UpsertAndSave(It.IsAny<PluginConfig>()), Times.Never);
         }
     }
 
@@ -88,12 +87,10 @@ public class PluginEnableCommandTests
             Assert.That(result, Is.Zero);
             Assert.That(_console.Output, Does.Contain("Plugin enabled."));
 
-            _mock.Verify(x => x.Upsert(It.Is<PluginConfig>(c =>
+            _mock.Verify(x => x.UpsertAndSave(It.Is<PluginConfig>(c =>
                     c.Id == "test.plugin1" &&
                     c.Enabled == true)),
                 Times.Once);
-
-            _mock.Verify(x => x.Save(), Times.Once);
         }
     }
 }
