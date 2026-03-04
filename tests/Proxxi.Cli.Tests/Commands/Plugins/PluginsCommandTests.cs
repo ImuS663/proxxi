@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using Proxxi.Cli.Commands.Plugins;
+using Proxxi.Cli.Tests.TestData;
 using Proxxi.Core.Models;
 using Proxxi.Core.Options;
 using Proxxi.Core.Providers;
@@ -44,7 +45,7 @@ public class PluginsCommandTests
     {
         _console = new TestConsole();
 
-        _plugins = TestData.Plugins.GetConfigs().ToArray();
+        _plugins = PluginTestData.GetConfigs().ToArray();
 
         _mock = new Mock<IPluginConfigProvider>();
     }

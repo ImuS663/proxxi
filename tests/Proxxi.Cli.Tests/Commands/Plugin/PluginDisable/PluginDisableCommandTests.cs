@@ -1,5 +1,6 @@
 using Moq;
 using Proxxi.Cli.Commands.Plugin.PluginDisable;
+using Proxxi.Cli.Tests.TestData;
 using Proxxi.Core.Models;
 using Proxxi.Core.Providers;
 using Spectre.Console.Testing;
@@ -17,8 +18,8 @@ public class PluginDisableCommandTests
     public void SetUp()
     {
         _console = new TestConsole();
-        
-        _plugins = TestData.Plugins.GetConfigs().ToArray();
+
+        _plugins = PluginTestData.GetConfigs().ToArray();
 
         _mock = new Mock<IPluginConfigProvider>();
 
