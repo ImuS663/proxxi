@@ -1,8 +1,10 @@
 using Moq;
+
 using Proxxi.Cli.Commands.Plugin.PluginAlias;
 using Proxxi.Cli.Tests.TestData;
 using Proxxi.Core.Models;
 using Proxxi.Core.Providers;
+
 using Spectre.Console.Testing;
 
 namespace Proxxi.Cli.Tests.Commands.Plugin.PluginAlias;
