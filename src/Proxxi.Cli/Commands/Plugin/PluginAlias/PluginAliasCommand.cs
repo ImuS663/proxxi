@@ -1,3 +1,4 @@
+using Proxxi.Core.Models;
 using Proxxi.Core.Providers;
 
 using Spectre.Console;
@@ -16,36 +17,10 @@ public sealed class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvid
             throw new InvalidOperationException($"Plugin '{settings.Id}' is not installed.");
 
         if (settings.Value != null)
-        {
-            if (configProvider.AliasExists(settings.Value, config.Id))
-                throw new InvalidOperationException($"Alias '{settings.Value}' is already in use.");
-
-            var oldAlias = config.Alias;
-            config.Alias = settings.Value;
-
-            configProvider.Upsert(config);
-            configProvider.Save();
-
-            console.MarkupLine($"[green]✓[/] Alias updated: {oldAlias ?? "<none>"} → [yellow]{config.Alias}[/]");
-            return 0;
-        }
+            return SetAlias(settings.Value, config);
 
         if (settings.Remove)
-        {
-            if (config.Alias == null)
-            {
-                console.MarkupLine("[blue]Info:[/] Plugin has no alias to remove.");
-                return 0;
-            }
-
-            config.Alias = null;
-
-            configProvider.Upsert(config);
-            configProvider.Save();
-
-            console.MarkupLine("[green]✓[/] Alias removed.");
-            return 0;
-        }
+            return RemovePluginAlias(config);
 
         console.MarkupLine(config.Alias != null
             ? $"Alias: [yellow]{config.Alias}[/]"
@@ -60,5 +35,41 @@ public sealed class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvid
             return ValidationResult.Error("Cannot specify [VALUE] and --remove together.");
 
         return ValidationResult.Success();
+    }
+
+    private int SetAlias(string value, PluginConfig config)
+    {
+        if (configProvider.AliasExists(value, config.Id))
+            throw new InvalidOperationException($"Alias '{value}' is already in use.");
+
+        var oldAlias = config.Alias;
+        config.Alias = value;
+
+        UpdatePluginConfig(config);
+
+        console.MarkupLine($"[green]✓[/] Alias updated: {oldAlias ?? "<none>"} → [yellow]{config.Alias}[/]");
+        return 0;
+    }
+
+    private int RemovePluginAlias(PluginConfig config)
+    {
+        if (config.Alias == null)
+        {
+            console.MarkupLine("[blue]Info:[/] Plugin has no alias to remove.");
+            return 0;
+        }
+
+        config.Alias = null;
+
+        UpdatePluginConfig(config);
+
+        console.MarkupLine("[green]✓[/] Alias removed.");
+        return 0;
+    }
+
+    private void UpdatePluginConfig(PluginConfig config)
+    {
+        configProvider.Upsert(config);
+        configProvider.Save();
     }
 }
