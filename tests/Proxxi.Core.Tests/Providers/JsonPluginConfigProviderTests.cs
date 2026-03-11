@@ -81,7 +81,10 @@ public class JsonPluginConfigProviderTests
 
         provider.Upsert(new PluginConfig
         {
-            Id = "test.plugin", Path = "plugins/test", Version = "1.0.0", Enabled = true
+            Id = "test.plugin",
+            Path = "plugins/test",
+            Version = "1.0.0",
+            Enabled = true
         });
 
         var result = provider.Get("test.plugin");
@@ -170,7 +173,10 @@ public class JsonPluginConfigProviderTests
 
         provider.Upsert(new PluginConfig
         {
-            Id = "test.plugin", Path = "plugins/test", Version = "1.0.0", Enabled = true
+            Id = "test.plugin",
+            Path = "plugins/test",
+            Version = "1.0.0",
+            Enabled = true
         });
 
         provider.Save();

@@ -7,12 +7,12 @@ namespace Proxxi.Core.Tests.ProxyWriters;
 public class PlainProxyWriterTests
 {
     private const string ExpectedPlainText = """
-                                        user:pass@44.44.44.44:8080
-                                        user:pass@88.88.88.88:8080
-                                        11.11.11.11:6080
-                                        user:pass@22.22.22.22:8080
+                                             user:pass@44.44.44.44:8080
+                                             user:pass@88.88.88.88:8080
+                                             11.11.11.11:6080
+                                             user:pass@22.22.22.22:8080
 
-                                        """;
+                                             """;
 
     private MemoryStream _stream;
 

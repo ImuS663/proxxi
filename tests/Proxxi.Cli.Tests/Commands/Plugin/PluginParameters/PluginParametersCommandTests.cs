@@ -21,7 +21,7 @@ public class PluginParametersCommandTests
     private IOptions<ProxxiPathsOptions> _options;
     private Mock<IPluginConfigProvider> _mockPluginConfigProvider;
     private Mock<IPluginLoader> _mockPluginLoader;
-    
+
     private PluginConfig[] _configs;
     private PluginDescriptor[] _descriptors;
 
