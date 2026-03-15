@@ -32,4 +32,8 @@ public sealed class FetchCommandSettings : CommandSettings
     [CommandOption("--pretty")]
     [Description("Write human-readable, pretty-formatted output")]
     public bool Pretty { get; init; }
+    
+    [CommandOption("-y|--yes"), DefaultValue(false)]
+    [Description("Skip confirmation prompts")]
+    public bool Yes { get; init; }
 }

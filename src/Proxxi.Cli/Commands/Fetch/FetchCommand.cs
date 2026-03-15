@@ -34,6 +34,9 @@ public sealed class FetchCommand(
 
         if (settings.Output != null)
         {
+            if (File.Exists(settings.Output) && !settings.Yes && !console.Prompt(ConfirmOverwritePrompt(settings)))
+                return 0;
+
             stream = File.Create(settings.Output);
 
             if (!Enum.TryParse(Path.GetExtension(settings.Output).TrimStart('.'), true, out format))
@@ -80,6 +83,9 @@ public sealed class FetchCommand(
                 await stream.DisposeAsync();
         }
     }
+
+    private static ConfirmationPrompt ConfirmOverwritePrompt(FetchCommandSettings settings) =>
+        new($"File '{settings.Output}' already exists. Overwrite?") { DefaultValue = false };
 
     private async Task<(IBatchProxySource?, IStreamProxySource?)> GetPluginInstance(string id, CancellationToken ct)
     {
