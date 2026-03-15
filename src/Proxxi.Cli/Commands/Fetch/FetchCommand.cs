@@ -101,7 +101,7 @@ public sealed class FetchCommand(
 
         var fullPath = Path.Combine(_pathOptions.PluginsDir, pluginConfig.Path);
 
-        var plugin = pluginLoader.LoadPlugin(fullPath, id);
+        var plugin = pluginLoader.LoadPlugin(fullPath, pluginConfig.Id);
 
         if (plugin == null)
             throw new InvalidOperationException($"Plugin '{id}' is not loaded.");
