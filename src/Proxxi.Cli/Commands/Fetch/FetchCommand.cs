@@ -70,6 +70,8 @@ public sealed class FetchCommand(
                 await FetchAndWriteProxiesAsync(batchProxySource, batchProxyWriter, protocols, ct);
             }
 
+            console.MarkupLine("[green]✓[/] Fetching complete.");
+
             return 0;
         }
         catch (OperationCanceledException)
