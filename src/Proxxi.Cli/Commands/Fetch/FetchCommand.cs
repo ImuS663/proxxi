@@ -34,7 +34,7 @@ public sealed class FetchCommand(
 
         if (settings.Output != null)
         {
-            stream = File.OpenWrite(settings.Output);
+            stream = File.Create(settings.Output);
 
             if (!Enum.TryParse(Path.GetExtension(settings.Output).TrimStart('.'), true, out format))
                 format = settings.Format;
