@@ -27,47 +27,30 @@ public sealed class FetchCommand(
     public override async Task<int> ExecuteAsync(CommandContext context, FetchCommandSettings settings,
         CancellationToken ct)
     {
-        Stream stream;
-        OutputFormat format;
-
         var protocols = settings.Protocols ?? Protocols.None;
-
-        if (settings.Output != null)
-        {
-            if (File.Exists(settings.Output) && !settings.Yes && !console.Prompt(ConfirmOverwritePrompt(settings)))
-                return 0;
-
-            stream = File.Create(settings.Output);
-
-            if (!Enum.TryParse(Path.GetExtension(settings.Output).TrimStart('.'), true, out format))
-                format = settings.Format;
-        }
-        else
-        {
-            stream = Console.OpenStandardOutput();
-            format = settings.Format;
-        }
 
         try
         {
+            await using var stream = CreateOutputStreamAsync(settings, ct);
+            var format = ResolveFormat(settings);
+
             (IBatchProxySource? batchProxySource, IStreamProxySource? streamProxySource) =
                 await GetPluginInstance(settings.Id, ct);
 
             var writer = CreateProxyWriter(stream, format, settings.Pretty);
 
-            if (settings.Stream)
+            switch (settings.Stream, writer)
             {
-                if (writer is not IStreamProxyWriter streamProxyWriter)
+                case (true, IStreamProxyWriter streamProxyWriter):
+                    await FetchAndWriteProxiesAsync(streamProxySource, streamProxyWriter, protocols, ct);
+                    break;
+                case (false, IBatchProxyWriter batchProxyWriter):
+                    await FetchAndWriteProxiesAsync(batchProxySource, batchProxyWriter, protocols, ct);
+                    break;
+                case (true, _):
                     throw new InvalidOperationException($"{format} output does not support stream mode.");
-
-                await FetchAndWriteProxiesAsync(streamProxySource, streamProxyWriter, protocols, ct);
-            }
-            else
-            {
-                if (writer is not IBatchProxyWriter batchProxyWriter)
-                    throw new InvalidOperationException($"{format} output does not support stream mode.");
-
-                await FetchAndWriteProxiesAsync(batchProxySource, batchProxyWriter, protocols, ct);
+                default:
+                    throw new InvalidOperationException($"{format} output does not support batch mode.");
             }
 
             console.MarkupLine("[green]✓[/] Fetching complete.");
@@ -79,15 +62,28 @@ public sealed class FetchCommand(
             console.MarkupLine("[yellow]Info:[/] Operation canceled.");
             return 130;
         }
-        finally
-        {
-            if (settings.Output != null)
-                await stream.DisposeAsync();
-        }
     }
 
-    private static ConfirmationPrompt ConfirmOverwritePrompt(FetchCommandSettings settings) =>
-        new($"File '{settings.Output}' already exists. Overwrite?") { DefaultValue = false };
+    private Stream CreateOutputStreamAsync(FetchCommandSettings settings, CancellationToken ct)
+    {
+        if (settings.Output == null)
+            return Console.OpenStandardOutput();
+
+        if (File.Exists(settings.Output) && !settings.Yes && !console.Prompt(ConfirmOverwritePrompt(settings)))
+            throw new OperationCanceledException();
+
+        return File.Create(settings.Output);
+    }
+
+    private static OutputFormat ResolveFormat(FetchCommandSettings settings)
+    {
+        if (settings.Output == null)
+            return settings.Format;
+
+        return Enum.TryParse(Path.GetExtension(settings.Output).TrimStart('.'), true, out OutputFormat format)
+            ? format
+            : settings.Format;
+    }
 
     private async Task<(IBatchProxySource?, IStreamProxySource?)> GetPluginInstance(string id, CancellationToken ct)
     {
@@ -108,6 +104,9 @@ public sealed class FetchCommand(
 
         return await plugin.CreateAsync(pluginConfig.Parameters.ToDictionary(), ct);
     }
+
+    private static ConfirmationPrompt ConfirmOverwritePrompt(FetchCommandSettings settings) =>
+        new($"File '{settings.Output}' already exists. Overwrite?") { DefaultValue = false };
 
     private static async Task FetchAndWriteProxiesAsync(IBatchProxySource? batchProxySource,
         IBatchProxyWriter writer, Protocols protocols, CancellationToken ct)
