@@ -19,8 +19,7 @@ public sealed class FetchCommand(
     IPluginConfigProvider configProvider,
     IPluginLoader pluginLoader,
     IOptions<ProxxiPathsOptions> options
-)
-    : AsyncCommand<FetchCommandSettings>
+) : AsyncCommand<FetchCommandSettings>
 {
     private readonly ProxxiPathsOptions _pathOptions = options.Value;
 

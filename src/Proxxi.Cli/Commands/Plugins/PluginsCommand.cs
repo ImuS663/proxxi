@@ -12,8 +12,7 @@ public sealed class PluginsCommand(
     IAnsiConsole console,
     IPluginConfigProvider configProvider,
     IOptions<ProxxiPathsOptions> options
-)
-    : Command<PluginsCommand.PluginsCommandSettings>
+) : Command<PluginsCommand.PluginsCommandSettings>
 {
     public class PluginsCommandSettings : CommandSettings;
 
