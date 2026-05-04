@@ -9,7 +9,7 @@ namespace Proxxi.Cli.Commands.Plugin.PluginAlias;
 public sealed class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvider configProvider)
     : Command<PluginAliasCommandSettings>
 {
-    public override int Execute(CommandContext context, PluginAliasCommandSettings settings, CancellationToken ct)
+    protected override int Execute(CommandContext context, PluginAliasCommandSettings settings, CancellationToken ct)
     {
         var config = configProvider.Get(settings.Id);
 
@@ -29,7 +29,7 @@ public sealed class PluginAliasCommand(IAnsiConsole console, IPluginConfigProvid
         return 0;
     }
 
-    public override ValidationResult Validate(CommandContext context, PluginAliasCommandSettings settings)
+    protected override ValidationResult Validate(CommandContext context, PluginAliasCommandSettings settings)
     {
         if (settings.Value != null && settings.Remove)
             return ValidationResult.Error("Cannot specify [VALUE] and --remove together.");

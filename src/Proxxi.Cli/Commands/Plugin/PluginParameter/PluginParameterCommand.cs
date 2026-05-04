@@ -20,7 +20,7 @@ public sealed class PluginParameterCommand(
 {
     private readonly ProxxiPathsOptions _pathOptions = options.Value;
 
-    public override int Execute(CommandContext context, PluginParameterCommandSettings settings, CancellationToken ct)
+    protected override int Execute(CommandContext context, PluginParameterCommandSettings settings, CancellationToken ct)
     {
         var config = configProvider.Get(settings.Id);
 
@@ -52,7 +52,7 @@ public sealed class PluginParameterCommand(
         return 0;
     }
 
-    public override ValidationResult Validate(CommandContext context, PluginParameterCommandSettings settings)
+    protected override ValidationResult Validate(CommandContext context, PluginParameterCommandSettings settings)
     {
         if (settings.Value != null && settings.Remove)
             return ValidationResult.Error("Cannot specify [VALUE] and --remove together.");

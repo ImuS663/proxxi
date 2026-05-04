@@ -23,7 +23,7 @@ public sealed class InstallCommand(
 {
     private readonly ProxxiPathsOptions _pathOptions = options.Value;
 
-    public override int Execute(CommandContext context, InstallCommandSettings settings, CancellationToken ct)
+    protected override int Execute(CommandContext context, InstallCommandSettings settings, CancellationToken ct)
     {
         var fileName = Path.GetFileNameWithoutExtension(settings.Path);
         var tempDir = Path.Combine(_pathOptions.TmpDir, Guid.NewGuid().ToString("N"));
@@ -90,7 +90,7 @@ public sealed class InstallCommand(
         }
     }
 
-    public override ValidationResult Validate(CommandContext context, InstallCommandSettings settings)
+    protected override ValidationResult Validate(CommandContext context, InstallCommandSettings settings)
     {
         return !string.Equals(Path.GetExtension(settings.Path), ".pxp", StringComparison.OrdinalIgnoreCase)
             ? ValidationResult.Error("File must be a .pxp file.")

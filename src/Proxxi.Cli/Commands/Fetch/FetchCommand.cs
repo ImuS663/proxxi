@@ -23,7 +23,7 @@ public sealed class FetchCommand(
 {
     private readonly ProxxiPathsOptions _pathOptions = options.Value;
 
-    public override async Task<int> ExecuteAsync(CommandContext context, FetchCommandSettings settings,
+    protected override async Task<int> ExecuteAsync(CommandContext context, FetchCommandSettings settings,
         CancellationToken ct)
     {
         var protocols = settings.Protocols ?? Protocols.None;
