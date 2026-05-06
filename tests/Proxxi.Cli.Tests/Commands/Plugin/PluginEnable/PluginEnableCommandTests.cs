@@ -1,10 +1,14 @@
+using Microsoft.Extensions.DependencyInjection;
+
 using Moq;
 
 using Proxxi.Cli.Commands.Plugin.PluginEnable;
+using Proxxi.Cli.Infrastructure.Injection;
 using Proxxi.Cli.Tests.TestData;
 using Proxxi.Core.Models;
 using Proxxi.Core.Providers;
 
+using Spectre.Console.Cli.Testing;
 using Spectre.Console.Testing;
 
 namespace Proxxi.Cli.Tests.Commands.Plugin.PluginEnable;
@@ -12,6 +16,8 @@ namespace Proxxi.Cli.Tests.Commands.Plugin.PluginEnable;
 [TestFixture(TestOf = typeof(PluginEnableCommand))]
 public class PluginEnableCommandTests
 {
+    private readonly ServiceCollection _services = [];
+
     private TestConsole _console;
     private Mock<IPluginConfigProvider> _mock;
     private PluginConfig[] _plugins;
@@ -31,6 +37,9 @@ public class PluginEnableCommandTests
         _mock.Setup(x => x.Get("test.plugin4")).Returns((PluginConfig?)null);
 
         _mock.Setup(x => x.AliasExists("p-alias", "test.plugin1")).Returns(true);
+
+        _services.AddSingleton(_console);
+        _services.AddSingleton(_mock.Object);
     }
 
     [TearDown]
@@ -44,31 +53,32 @@ public class PluginEnableCommandTests
     [Test]
     public void Execute_WhenPluginIsNotFound_ThrowsInvalidOperationException()
     {
-        var command = new PluginEnableCommand(_console, _mock.Object);
+        var app = new CommandAppTester(new TypeRegistrar(_services));
 
-        var settings = new PluginEnableCommand.PluginEnableCommandSettings { Id = "test.plugin4" };
+        app.SetDefaultCommand<PluginEnableCommand>();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
+        var result = app.Run("test.plugin4");
+
+        using (Assert.EnterMultipleScope())
         {
-            command.Execute(null!, settings, CancellationToken.None);
-        });
-
-        Assert.That(exception.Message, Is.EqualTo("Plugin 'test.plugin4' not found."));
+            Assert.That(result.ExitCode, Is.EqualTo(-1));
+            Assert.That(result.Output, Does.Contain("Plugin 'test.plugin4' not found."));
+        }
     }
 
     [Test]
     public void Execute_WhenPluginIsEnabled_ReturnsZeroAndNotSave()
     {
-        var command = new PluginEnableCommand(_console, _mock.Object);
+        var app = new CommandAppTester(new TypeRegistrar(_services));
 
-        var settings = new PluginEnableCommand.PluginEnableCommandSettings { Id = "test.plugin2" };
+        app.SetDefaultCommand<PluginEnableCommand>();
 
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = app.Run("test.plugin2");
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.Zero);
-            Assert.That(_console.Output, Does.Contain("Plugin already enabled."));
+            Assert.That(result.ExitCode, Is.Zero);
+            Assert.That(result.Output, Does.Contain("Plugin already enabled."));
             _mock.Verify(x => x.UpsertAndSave(It.IsAny<PluginConfig>()), Times.Never);
         }
     }
@@ -76,16 +86,16 @@ public class PluginEnableCommandTests
     [Test]
     public void Execute_WhenPluginIsEnable_UpdatesPluginAndSave()
     {
-        var command = new PluginEnableCommand(_console, _mock.Object);
+        var app = new CommandAppTester(new TypeRegistrar(_services));
 
-        var settings = new PluginEnableCommand.PluginEnableCommandSettings { Id = "test.plugin1" };
+        app.SetDefaultCommand<PluginEnableCommand>();
 
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = app.Run("test.plugin1");
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.Zero);
-            Assert.That(_console.Output, Does.Contain("Plugin enabled."));
+            Assert.That(result.ExitCode, Is.Zero);
+            Assert.That(result.Output, Does.Contain("Plugin enabled."));
 
             _mock.Verify(x => x.UpsertAndSave(It.Is<PluginConfig>(c =>
                     c.Id == "test.plugin1" &&

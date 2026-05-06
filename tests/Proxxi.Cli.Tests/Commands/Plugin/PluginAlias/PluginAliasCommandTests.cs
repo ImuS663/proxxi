@@ -1,10 +1,14 @@
+using Microsoft.Extensions.DependencyInjection;
+
 using Moq;
 
 using Proxxi.Cli.Commands.Plugin.PluginAlias;
+using Proxxi.Cli.Infrastructure.Injection;
 using Proxxi.Cli.Tests.TestData;
 using Proxxi.Core.Models;
 using Proxxi.Core.Providers;
 
+using Spectre.Console.Cli.Testing;
 using Spectre.Console.Testing;
 
 namespace Proxxi.Cli.Tests.Commands.Plugin.PluginAlias;
@@ -12,6 +16,8 @@ namespace Proxxi.Cli.Tests.Commands.Plugin.PluginAlias;
 [TestFixture(TestOf = typeof(PluginAliasCommand))]
 public class PluginAliasCommandTests
 {
+    private readonly ServiceCollection _services = [];
+
     private TestConsole _console;
     private Mock<IPluginConfigProvider> _mock;
     private PluginConfig[] _plugins;
@@ -31,6 +37,9 @@ public class PluginAliasCommandTests
         _mock.Setup(x => x.Get("test.plugin4")).Returns((PluginConfig?)null);
 
         _mock.Setup(x => x.AliasExists("p-alias", "test.plugin1")).Returns(true);
+
+        _services.AddSingleton(_console);
+        _services.AddSingleton(_mock.Object);
     }
 
     [TearDown]
@@ -44,44 +53,48 @@ public class PluginAliasCommandTests
     [Test]
     public void Execute_WhenPluginIsNotInstalled_ThrowsInvalidOperationException()
     {
-        var command = new PluginAliasCommand(_console, _mock.Object);
+        var app = new CommandAppTester(new TypeRegistrar(_services));
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
+        app.SetDefaultCommand<PluginAliasCommand>();
+
+        var result = app.Run("test.plugin4");
+
+        using (Assert.EnterMultipleScope())
         {
-            command.Execute(null!, new PluginAliasCommandSettings { Id = "test.plugin4" }, CancellationToken.None);
-        });
-
-        Assert.That(exception.Message, Is.EqualTo("Plugin 'test.plugin4' is not installed."));
+            Assert.That(result.ExitCode, Is.EqualTo(-1));
+            Assert.That(result.Output, Does.Contain("Plugin 'test.plugin4' is not installed."));
+        }
     }
 
     [Test]
     public void Execute_WhenAliasAlreadyExists_ThrowsInvalidOperationException()
     {
-        var command = new PluginAliasCommand(_console, _mock.Object);
+        var app = new CommandAppTester(new TypeRegistrar(_services));
 
-        var settings = new PluginAliasCommandSettings { Id = "test.plugin1", Value = "p-alias" };
+        app.SetDefaultCommand<PluginAliasCommand>();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
+        var result = app.Run("test.plugin1", "p-alias");
+
+        using (Assert.EnterMultipleScope())
         {
-            command.Execute(null!, settings, CancellationToken.None);
-        });
-
-        Assert.That(exception.Message, Is.EqualTo("Alias 'p-alias' is already in use."));
+            Assert.That(result.ExitCode, Is.EqualTo(-1));
+            Assert.That(result.Output, Does.Contain("Alias 'p-alias' is already in use."));
+        }
     }
 
     [Test]
     public void Execute_WhenAliasIsSet_UpdatesPluginAndSave()
     {
-        var command = new PluginAliasCommand(_console, _mock.Object);
+        var app = new CommandAppTester(new TypeRegistrar(_services));
 
-        var settings = new PluginAliasCommandSettings { Id = "test.plugin1", Value = "new-alias" };
+        app.SetDefaultCommand<PluginAliasCommand>();
 
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = app.Run("test.plugin1", "new-alias");
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.Zero);
-            Assert.That(_console.Output, Does.Contain("Alias updated: <none> → new-alias"));
+            Assert.That(result.ExitCode, Is.Zero);
+            Assert.That(result.Output, Does.Contain("Alias updated: <none> → new-alias"));
 
             _mock.Verify(x => x.UpsertAndSave(It.Is<PluginConfig>(c =>
                     c.Id == "test.plugin1" &&
@@ -94,16 +107,16 @@ public class PluginAliasCommandTests
     [Test]
     public void Execute_WhenRemovingAliasButPluginHasNone_ReturnsZeroAndNotSave()
     {
-        var command = new PluginAliasCommand(_console, _mock.Object);
+        var app = new CommandAppTester(new TypeRegistrar(_services));
 
-        var settings = new PluginAliasCommandSettings { Id = "test.plugin1", Remove = true };
+        app.SetDefaultCommand<PluginAliasCommand>();
 
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = app.Run("test.plugin1", "-r");
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.Zero);
-            Assert.That(_console.Output, Does.Contain("Plugin has no alias to remove."));
+            Assert.That(result.ExitCode, Is.Zero);
+            Assert.That(result.Output, Does.Contain("Plugin has no alias to remove."));
             _mock.Verify(x => x.UpsertAndSave(It.IsAny<PluginConfig>()), Times.Never);
         }
     }
@@ -111,16 +124,16 @@ public class PluginAliasCommandTests
     [Test]
     public void Execute_WhenRemovingAlias_ClearsAliasAndSave()
     {
-        var command = new PluginAliasCommand(_console, _mock.Object);
+        var app = new CommandAppTester(new TypeRegistrar(_services));
 
-        var settings = new PluginAliasCommandSettings { Id = "test.plugin3", Remove = true };
+        app.SetDefaultCommand<PluginAliasCommand>();
 
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = app.Run("test.plugin3", "--remove");
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result, Is.Zero);
-            Assert.That(_console.Output, Does.Contain("Alias removed."));
+            Assert.That(result.ExitCode, Is.Zero);
+            Assert.That(result.Output, Does.Contain("Alias removed."));
 
             _mock.Verify(x => x.UpsertAndSave(It.Is<PluginConfig>(c =>
                     c.Id == "test.plugin3" &&
