@@ -5,7 +5,7 @@ using Proxxi.Plugin.Sdk.Models;
 
 namespace Proxxi.Core.ProxyWriters;
 
-public sealed class XmlProxyWriter(Stream stream, bool writeIndented = false) : IBatchProxyWriter, IStreamProxyWriter
+public sealed class XmlProxyWriter(Stream stream, bool writeIndented = false) : IProxyWriter
 {
     private readonly XmlWriterSettings _settings = new() { Async = true, Indent = writeIndented };
 

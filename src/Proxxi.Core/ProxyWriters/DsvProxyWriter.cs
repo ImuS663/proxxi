@@ -5,8 +5,7 @@ using Proxxi.Plugin.Sdk.Models;
 
 namespace Proxxi.Core.ProxyWriters;
 
-public abstract class DsvProxyWriter(Stream stream, bool writeHeader, char separator)
-    : IBatchProxyWriter, IStreamProxyWriter
+public abstract class DsvProxyWriter(Stream stream, bool writeHeader, char separator) : IProxyWriter
 {
     private static readonly Encoding Encoding = new UTF8Encoding(false);
     private static readonly string[] Headers = ["host", "port", "username", "password", "protocols"];

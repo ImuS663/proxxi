@@ -7,7 +7,7 @@ using Proxxi.Plugin.Sdk.Models;
 
 namespace Proxxi.Core.ProxyWriters;
 
-public sealed class JsonProxyWriter(Stream stream, bool writeIndented = false) : IBatchProxyWriter, IStreamProxyWriter
+public sealed class JsonProxyWriter(Stream stream, bool writeIndented = false) : IProxyWriter
 {
     private readonly JsonSerializerOptions _options = new(JsonSerializerDefaults.General)
     {

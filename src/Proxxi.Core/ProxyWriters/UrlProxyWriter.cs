@@ -5,7 +5,7 @@ using Proxxi.Plugin.Sdk.Models;
 
 namespace Proxxi.Core.ProxyWriters;
 
-public class UrlProxyWriter(Stream stream) : IBatchProxyWriter, IStreamProxyWriter
+public class UrlProxyWriter(Stream stream) : IProxyWriter
 {
     private static readonly Encoding Encoding = new UTF8Encoding(false);
 

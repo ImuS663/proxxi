@@ -38,19 +38,10 @@ public sealed class FetchCommand(
 
             var writer = CreateProxyWriter(stream, format, settings.Pretty);
 
-            switch (settings.Stream, writer)
-            {
-                case (true, IStreamProxyWriter streamProxyWriter):
-                    await FetchAndWriteProxiesAsync(streamProxySource, streamProxyWriter, protocols, ct);
-                    break;
-                case (false, IBatchProxyWriter batchProxyWriter):
-                    await FetchAndWriteProxiesAsync(batchProxySource, batchProxyWriter, protocols, ct);
-                    break;
-                case (true, _):
-                    throw new InvalidOperationException($"{format} output does not support stream mode.");
-                default:
-                    throw new InvalidOperationException($"{format} output does not support batch mode.");
-            }
+            if (settings.Stream)
+                await FetchAndWriteProxiesAsync(streamProxySource, writer, protocols, ct);
+            else
+                await FetchAndWriteProxiesAsync(batchProxySource, writer, protocols, ct);
 
             console.MarkupLine("[green]✓[/] Fetching complete.");
 
@@ -108,7 +99,7 @@ public sealed class FetchCommand(
         new($"File '{settings.Output}' already exists. Overwrite?") { DefaultValue = false };
 
     private static async Task FetchAndWriteProxiesAsync(IBatchProxySource? batchProxySource,
-        IBatchProxyWriter writer, Protocols protocols, CancellationToken ct)
+        IProxyWriter writer, Protocols protocols, CancellationToken ct)
     {
         if (batchProxySource == null)
             throw new InvalidOperationException("The plugin does not support batch mode.");
@@ -122,7 +113,7 @@ public sealed class FetchCommand(
     }
 
     private static async Task FetchAndWriteProxiesAsync(IStreamProxySource? streamProxySource,
-        IStreamProxyWriter writer, Protocols protocols, CancellationToken ct)
+        IProxyWriter writer, Protocols protocols, CancellationToken ct)
     {
         if (streamProxySource == null)
             throw new InvalidOperationException("The plugin does not support stream mode.");

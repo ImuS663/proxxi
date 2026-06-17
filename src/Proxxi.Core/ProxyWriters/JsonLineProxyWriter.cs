@@ -7,7 +7,7 @@ using Proxxi.Plugin.Sdk.Models;
 
 namespace Proxxi.Core.ProxyWriters;
 
-public sealed class JsonLineProxyWriter(Stream stream) : IBatchProxyWriter, IStreamProxyWriter
+public sealed class JsonLineProxyWriter(Stream stream) : IProxyWriter
 {
     private static readonly Encoding Encoding = new UTF8Encoding(false);
 
