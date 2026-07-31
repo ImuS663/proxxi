@@ -1,28 +1,15 @@
-using Microsoft.Extensions.Options;
-
+using Proxxi.Cli.Services;
 using Proxxi.Core.Models;
-using Proxxi.Core.Options;
-using Proxxi.Core.Providers;
 using Proxxi.Core.ProxyWriters;
-using Proxxi.Plugin.Loader.Extensions;
-using Proxxi.Plugin.Loader.PluginLoaders;
 using Proxxi.Plugin.Sdk.Models;
-using Proxxi.Plugin.Sdk.ProxySources;
 
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Proxxi.Cli.Commands.Fetch;
 
-public sealed class FetchCommand(
-    IAnsiConsole console,
-    IPluginConfigProvider configProvider,
-    IPluginLoader pluginLoader,
-    IOptions<ProxxiPathsOptions> options
-) : AsyncCommand<FetchCommandSettings>
+public sealed class FetchCommand(IAnsiConsole console, ProxyFetcher fetcher) : AsyncCommand<FetchCommandSettings>
 {
-    private readonly ProxxiPathsOptions _pathOptions = options.Value;
-
     protected override async Task<int> ExecuteAsync(CommandContext context, FetchCommandSettings settings,
         CancellationToken ct)
     {
@@ -30,22 +17,33 @@ public sealed class FetchCommand(
 
         try
         {
-            await using var stream = CreateOutputStreamAsync(settings, ct);
+            await using var stream = CreateOutputStreamAsync(settings);
             var format = ResolveFormat(settings);
-
-            (IBatchProxySource? batchProxySource, IStreamProxySource? streamProxySource) =
-                await GetPluginInstance(settings.Id, ct);
 
             var writer = CreateProxyWriter(stream, format, settings.Pretty);
 
             if (settings.Stream)
-                await FetchAndWriteProxiesAsync(streamProxySource, writer, protocols, ct);
+            {
+                var proxies = ApplyStreamFilter(await fetcher.FetchStreamAsync(settings.Id, ct));
+
+                await writer.WriteAsync(proxies, ct);
+            }
             else
-                await FetchAndWriteProxiesAsync(batchProxySource, writer, protocols, ct);
+            {
+                var proxies = ApplyBatchFilter(await fetcher.FetchBatchAsync(settings.Id, ct));
+
+                await writer.WriteAsync(proxies, ct);
+            }
 
             console.MarkupLine("[green]✓[/] Fetching complete.");
 
             return 0;
+
+            IAsyncEnumerable<Proxy> ApplyStreamFilter(IAsyncEnumerable<Proxy> src) =>
+                protocols != Protocols.None ? src.Where(p => (p.Protocols & protocols) != Protocols.None) : src;
+
+            IEnumerable<Proxy> ApplyBatchFilter(IEnumerable<Proxy> src) =>
+                protocols != Protocols.None ? src.Where(p => (p.Protocols & protocols) != Protocols.None) : src;
         }
         catch (OperationCanceledException)
         {
@@ -54,7 +52,7 @@ public sealed class FetchCommand(
         }
     }
 
-    private Stream CreateOutputStreamAsync(FetchCommandSettings settings, CancellationToken ct)
+    private Stream CreateOutputStreamAsync(FetchCommandSettings settings)
     {
         if (settings.Output == null)
             return Console.OpenStandardOutput();
@@ -75,56 +73,8 @@ public sealed class FetchCommand(
             : settings.Format;
     }
 
-    private async Task<(IBatchProxySource?, IStreamProxySource?)> GetPluginInstance(string id, CancellationToken ct)
-    {
-        var pluginConfig = configProvider.Get(id);
-
-        if (pluginConfig == null)
-            throw new InvalidOperationException($"Plugin '{id}' is not installed.");
-
-        if (!pluginConfig.Enabled)
-            throw new InvalidOperationException($"Plugin '{id}' is disabled.");
-
-        var fullPath = Path.Combine(_pathOptions.PluginsDir, pluginConfig.Path);
-
-        var plugin = pluginLoader.LoadPlugin(fullPath, pluginConfig.Id);
-
-        if (plugin == null)
-            throw new InvalidOperationException($"Plugin '{id}' is not loaded.");
-
-        return await plugin.CreateAsync(pluginConfig.Parameters.ToDictionary(), ct);
-    }
-
     private static ConfirmationPrompt ConfirmOverwritePrompt(FetchCommandSettings settings) =>
         new($"File '{settings.Output}' already exists. Overwrite?") { DefaultValue = false };
-
-    private static async Task FetchAndWriteProxiesAsync(IBatchProxySource? batchProxySource,
-        IProxyWriter writer, Protocols protocols, CancellationToken ct)
-    {
-        if (batchProxySource == null)
-            throw new InvalidOperationException("The plugin does not support batch mode.");
-
-        var proxies = await batchProxySource.FetchAsync(ct);
-
-        if (protocols != Protocols.None)
-            proxies = proxies.Where(p => (p.Protocols & protocols) != Protocols.None);
-
-        await writer.WriteAsync(proxies, ct);
-    }
-
-    private static async Task FetchAndWriteProxiesAsync(IStreamProxySource? streamProxySource,
-        IProxyWriter writer, Protocols protocols, CancellationToken ct)
-    {
-        if (streamProxySource == null)
-            throw new InvalidOperationException("The plugin does not support stream mode.");
-
-        var proxies = streamProxySource.FetchAsync(ct);
-
-        if (protocols != Protocols.None)
-            proxies = proxies.Where(p => (p.Protocols & protocols) != Protocols.None);
-
-        await writer.WriteAsync(proxies, ct);
-    }
 
     private static IProxyWriter CreateProxyWriter(Stream stream, OutputFormat format, bool isPretty) =>
         format switch

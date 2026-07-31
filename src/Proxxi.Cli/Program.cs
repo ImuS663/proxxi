@@ -16,6 +16,7 @@ using Proxxi.Cli.Commands.Plugin.PluginParameter;
 using Proxxi.Cli.Commands.Plugin.PluginParameters;
 using Proxxi.Cli.Commands.Plugins;
 using Proxxi.Cli.Infrastructure.Injection;
+using Proxxi.Cli.Services;
 using Proxxi.Core.Extensions;
 using Proxxi.Core.Providers;
 using Proxxi.Plugin.Loader.PluginLoaders;
@@ -40,6 +41,8 @@ services.AddSingleton(AnsiConsole.Console);
 services.AddSingleton<IPluginLoader, PluginLoader>();
 
 services.AddSingleton<IPluginConfigProvider, JsonPluginConfigProvider>();
+
+services.AddSingleton<ProxyFetcher>();
 
 var app = new CommandApp(new TypeRegistrar(services));
 
