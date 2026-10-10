@@ -10,7 +10,7 @@ namespace Proxxi.Cli.Commands.Fetch;
 
 public sealed class FetchCommand(IAnsiConsole console, ProxyFetcher fetcher) : AsyncCommand<FetchCommandSettings>
 {
-    protected override async Task<int> ExecuteAsync(CommandContext context, FetchCommandSettings settings,
+    public override async Task<int> ExecuteAsync(CommandContext context, FetchCommandSettings settings,
         CancellationToken ct)
     {
         var protocols = settings.Protocols ?? Protocols.None;

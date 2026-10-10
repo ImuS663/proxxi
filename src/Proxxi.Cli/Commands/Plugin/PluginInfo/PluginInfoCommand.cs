@@ -21,7 +21,7 @@ public sealed class PluginInfoCommand(
 
     private readonly ProxxiPathsOptions _pathOptions = options.Value;
 
-    protected override int Execute(CommandContext context, PluginInfoCommandSettings settings, CancellationToken ct)
+    public override int Execute(CommandContext context, PluginInfoCommandSettings settings, CancellationToken ct)
     {
         var config = configProvider.Get(settings.Id);
 

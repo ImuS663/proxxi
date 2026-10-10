@@ -10,7 +10,7 @@ public sealed class PluginEnableCommand(IAnsiConsole console, IPluginConfigProvi
 {
     public class PluginEnableCommandSettings : PluginCommandSettings;
 
-    protected override int Execute(CommandContext context, PluginEnableCommandSettings settings, CancellationToken ct)
+    public override int Execute(CommandContext context, PluginEnableCommandSettings settings, CancellationToken ct)
     {
         var config = configProvider.Get(settings.Id);
 

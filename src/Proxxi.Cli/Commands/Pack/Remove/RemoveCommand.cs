@@ -17,7 +17,7 @@ public sealed class RemoveCommand(
 {
     private readonly ProxxiPathsOptions _pathOptions = options.Value;
 
-    protected override int Execute(CommandContext context, RemoveCommandSettings settings, CancellationToken ct)
+    public override int Execute(CommandContext context, RemoveCommandSettings settings, CancellationToken ct)
     {
         var config = configProvider.Get(settings.Id);
 

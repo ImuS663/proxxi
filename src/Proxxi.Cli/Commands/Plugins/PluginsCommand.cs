@@ -20,7 +20,7 @@ public sealed class PluginsCommand(
 
     private readonly ProxxiPathsOptions _pathOptions = options.Value;
 
-    protected override int Execute(CommandContext context, PluginsCommandSettings settings, CancellationToken ct)
+    public override int Execute(CommandContext context, PluginsCommandSettings settings, CancellationToken ct)
     {
         var configs = configProvider.GetAll();
 
