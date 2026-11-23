@@ -24,11 +24,11 @@ using Proxxi.Plugin.Loader.PluginLoaders;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-string applicationName = Assembly.GetExecutingAssembly().GetName().Name ?? "proxxi";
-string applicationVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "unknown";
+var applicationName = Assembly.GetExecutingAssembly().GetName().Name ?? "proxxi";
+var applicationVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "unknown";
 
-string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-string defaultDir = Path.Combine(userDir, ".proxxi");
+var userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+var defaultDir = Path.Combine(userDir, ".proxxi");
 
 var proxxiDir = Environment.GetEnvironmentVariable("PROXXI_DIR") ?? defaultDir;
 
